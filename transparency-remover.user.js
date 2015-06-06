@@ -3,7 +3,7 @@
 // @namespace   https://github.com/ccd0
 // @description Reveals the colors in the transparent regions of PNG images. Activated by a context menu item.
 // @match       *://*/*
-// @version     0.0.1
+// @version     0.0.2
 // @grant       GM_xmlhttpRequest
 // @updateURL 	https://ccd0.github.io/transparency-remover/transparency-remover.meta.js
 // @downloadURL https://ccd0.github.io/transparency-remover/transparency-remover.user.js
@@ -79,8 +79,8 @@ menu.firstChild.addEventListener('click', function(e) {
 
 function makeContext(img) {
   var canvas = document.createElement('canvas');
-  canvas.width = img.width;
-  canvas.height = img.height;
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
   var ctx = canvas.getContext('2d');
   return ctx;
 }
@@ -95,7 +95,7 @@ function removeAlpha(img) {
     responseType: 'arraybuffer',
     onload: function(resp) {
       var id = img.parentNode.parentNode.id;
-      var output = makeContext(img).createImageData(img.width, img.height);
+      var output = makeContext(img).createImageData(img.naturalWidth, img.naturalHeight);
       worker.postMessage({i: i, input: resp.response, output: output});
     }
   });
