@@ -1,3 +1,5 @@
 Userscript that reveals the colors in the transparent regions of PNG images, when activated by a context menu item.
 
 Only working in Firefox so far.  Still pretty buggy.
+
+Install: https://ccd0.github.io/transparency-remover/transparency-remover.user.js
