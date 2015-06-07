@@ -811,7 +811,9 @@ var FlateStream = (function() {
       return b1 | b2;
     };
 
-    // modified based on https://github.com/devongovett/png.js/issues/8
+    // modified based on
+    // https://github.com/devongovett/png.js/issues/8
+    // https://github.com/devongovett/png.js/pull/7
     PNG.prototype.decodePixels = function(data) {
       if (data == null) {
         data = this.imgData;
@@ -938,7 +940,7 @@ var FlateStream = (function() {
       var c, i, length, palette, pos, ret, transparency, _i, _ref, _ref1;
       palette = this.palette;
       transparency = this.transparency.indexed || [];
-      ret = new Uint8Array((transparency.length || 0) + palette.length);
+      ret = new Uint8Array(palette.length / 3 * 4);
       pos = 0;
       length = palette.length;
       c = 0;
