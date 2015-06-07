@@ -814,6 +814,7 @@ var FlateStream = (function() {
     // modified based on
     // https://github.com/devongovett/png.js/issues/8
     // https://github.com/devongovett/png.js/pull/7
+    // https://github.com/seikichi/png.js/commit/ac2dfd1e612206cf5a94c9d1988e0787bac13eed
     PNG.prototype.decodePixels = function(data) {
       if (data == null) {
         data = this.imgData;
@@ -828,7 +829,7 @@ var FlateStream = (function() {
       var pos = 0;
       var _this = this;
       function pass(x0, y0, dx, dy) {
-        var byte, c, col, i, left, p, pa, paeth, pb, pc, pixels, row, scanlineLength, upper, upperLeft;
+        var byte, c, col, i, left, p, pa, paeth, pb, pc, pixels, row, scanlineLength, uint8pixels, upper, upperLeft, _ref;
         var w = Math.ceil((_this.width - x0) / dx), h = Math.ceil((_this.height - y0) / dy);
         var isFull = _this.width == w && _this.height == h;
         scanlineLength = pixelBytes * w;
@@ -933,6 +934,13 @@ var FlateStream = (function() {
         pass(0, 1, 1, 2); // 7
       } else
         pass(0, 0, 1, 1);
+      if (this.bits === 16) {
+        uint8pixels = new Uint8Array(fullPixels.length / 2);
+        for (i = 0, _ref = uint8pixels.length; i < _ref; i += 1) {
+          uint8pixels[i] = fullPixels[2 * i];
+        }
+        fullPixels = uint8pixels;
+      }
       return fullPixels;
     };
 
