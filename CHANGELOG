@@ -3,3 +3,4 @@ v0.0.2: Fix bug with scaled images.
 v0.0.3: Support interlaced PNG files.
 v0.0.4: More PNG decoding bugfixes.
 v0.1.0: Support file: URIs (if extensions.greasemonkey.fileIsGreaseable is true)
+v0.1.1: Fix script not working on images from web in pages from local filesystem.
