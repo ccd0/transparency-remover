@@ -105,7 +105,7 @@ function windowCallback(prefix, f) {
 }
 
 function loadImage(url, cb) {
-  if (location.protocol === 'file:') {
+  if (location.protocol === 'file:' && /^file:/.test(url)) {
     loadImage.i = loadImage.i || 0;
     var eventName = windowCallback('transparency-remover-callback-', cb);
     windowEval([url, eventName], function(url, eventName) {
