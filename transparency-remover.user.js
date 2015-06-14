@@ -1,4 +1,4 @@
-// ==UserScript==
+﻿// ==UserScript==
 // @name        Transparency Remover
 // @namespace   https://github.com/ccd0
 // @description Reveals the colors in the transparent regions of PNG images. Activated by a context menu item.
@@ -85,19 +85,61 @@ function makeContext(img) {
   return ctx;
 }
 
+function windowEval(args, f) {
+  var s = document.createElement('script');
+  s.textContent = '(' + f + ').apply(this, ' + JSON.stringify(args) + ');';
+  document.head.appendChild(s);
+  s.remove();
+}
+
+function windowCallback(prefix, f) {
+  windowCallback.i = windowCallback.i || 0;
+  var eventName = prefix + windowCallback.i;
+  windowCallback.i++;
+  function listener(e) {
+    document.removeEventListener(eventName, listener, false);
+    f(e.detail);
+  }
+  document.addEventListener(eventName, listener, false);
+  return eventName;
+}
+
+function loadImage(url, cb) {
+  if (location.protocol === 'file:') {
+    loadImage.i = loadImage.i || 0;
+    var eventName = windowCallback('transparency-remover-callback-', cb);
+    windowEval([url, eventName], function(url, eventName) {
+      var x = new XMLHttpRequest();
+      x.open('GET', url);
+      x.overrideMimeType('image/png');
+      x.responseType = 'arraybuffer';
+      x.onload = function() {
+        var e = new CustomEvent(eventName, {bubbles: true, detail: x.response});
+        document.dispatchEvent(e);
+      };
+      x.send();
+    });
+    loadImage.i++;
+  } else {
+    GM_xmlhttpRequest({
+      method: 'GET',
+      url: url,
+      responseType: 'arraybuffer',
+      onload: function(resp) {
+        cb(resp.response);
+      }
+    });
+  }
+}
+
 function removeAlpha(img) {
   var i = nextIndex;
   images[i] = img;
   nextIndex++;
-  GM_xmlhttpRequest({
-    method: 'GET',
-    url: img.src,
-    responseType: 'arraybuffer',
-    onload: function(resp) {
-      var id = img.parentNode.parentNode.id;
-      var output = makeContext(img).createImageData(img.naturalWidth, img.naturalHeight);
-      worker.postMessage({i: i, input: resp.response, output: output});
-    }
+  loadImage(img.src, function(data) {
+    var id = img.parentNode.parentNode.id;
+    var output = makeContext(img).createImageData(img.naturalWidth, img.naturalHeight);
+    worker.postMessage({i: i, input: data, output: output});
   });
 }
 
